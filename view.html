@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap" rel="stylesheet">
+  <!-- Mobile Specific Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+  <link rel="stylesheet" type="text/css" href="https://themesflat.co/html/binaboxhtml/assets/css/style.css">
+
+  <style>
+    #table-body tr {
+      display: none;
+    }
+
+
+    th,
+    td {
+      border: 2px solid black;
+    }
+
+    .heading {
+      text-shadow: 0px 4px 16px rgb(90, 90, 90);
+    }
+
+    .total-rechazados {
+      color: red;
+    }
+
+    .total-aprobados {
+      color: #00ee00;
+    }
+
+    tr.aprobado {
+      background-color: #00ee00 !important;
+    }
+
+    tr.rechazado {
+      background-color: red !important;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <br>
+    <div class="table-responsive">
+      <div class="input-group mb-3">
+        <input id="search-input" type="text" class="form-control" placeholder="Buscar solicitante por DNI"
+          aria-label="Buscar solicitante" aria-describedby="search-button">
+        <div class="input-group-append">
+          <button id="search-button" class="btn btn-outline-secondary" type="button">Buscar</button>
+        </div>
+      </div>
+      <table class="table table-sm table-responsive">
+        <thead class="thead-dark">
+          <tr>
+            <th class="text-center small "><b>N°</b></th>
+            <th class="text-center small "><b>Marca temporal</b></th>
+            <th class="text-center small "><b>Correo Electrónico</b></th>
+            <th class="text-center small "><b>Importe S/</b></th>
+            <th class="text-center small "><b>Entrega de dinero</b></th>
+            <th class="text-center small "><b>Fecha de Justificación</b></th>
+            <th class="text-center small "><b>Centro de Costo</b></th>
+            <th class="text-center small "><b>Área</b></th>
+            <th class="text-center small "><b>Actividad</b></th>
+            <th class="text-center small "><b>Solicitante</b></th>
+            <th class="text-center small "><b>Celular</b></th>
+            <th class="text-center small "><b>DNI</b></th>
+            <th style="padding: 0px 50px;" class="text-center small "><b>Firma</b></th>
+            <th class="text-center small "><b>Estado</b></th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="tf-heading">
+      <h2 class="heading">CANTIDAD DE ESTADO</h2>
+    </div>
+    <table id="total-table" class="table table-sm">
+      <thead class="thead-dark">
+        <tr>
+          <th class="text-center small "><b>Estado</b></th>
+          <th class="text-center small "><b>Cantidad</b></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="total-rechazados">Rechazado</td>
+          <td id="total-rechazados"></td>
+        </tr>
+        <tr>
+          <td class="total-aprobados">Aprobado</td>
+          <td id="total-aprobados"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="container">
+    <div class="tf-heading">
+      <h2 class="heading">SOLICITUDES</h2>
+    </div>
+    <table id="solicitante-table" class="table table-sm">
+      <thead class="thead-dark">
+        <tr>
+          <th class="text-center small "><b>Solicitante</b></th>
+          <th class="text-center small "><b>Cantidad</b></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Michaell Ibarra Martinez</td>
+          <td id="michaell"></td>
+        </tr>
+        <tr>
+          <td>Jhon Melchor Yataco</td>
+          <td id="jhon"></td>
+        </tr>
+        <tr>
+          <td>Luis Manzo Candela</td>
+          <td id="luis"></td>
+        </tr>
+        <tr>
+          <td>Fatima Matos Guando</td>
+          <td id="fatima"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://apis.google.com/js/api.js?key=AIzaSyAmCLwuc94_hiXPDcVsYWV7toMyPqsrot8"></script>
+
+  <script>
+    // Habilitar o deshabilitar el botón de búsqueda según el contenido del campo de entrada
+    function toggleSearchButton() {
+      var searchButton = document.getElementById('search-button');
+      var searchInput = document.getElementById('search-input');
+      searchButton.disabled = searchInput.value.trim() === '';
+    }
+
+    document.getElementById('search-input').addEventListener('input', toggleSearchButton);
+
+    // Llamar a la función toggleSearchButton() al cargar la página
+    document.addEventListener('DOMContentLoaded', toggleSearchButton);
+  </script>
+
+  <script>
+
+    var apiKey = 'AIzaSyAmCLwuc94_hiXPDcVsYWV7toMyPqsrot8';
+
+    // ID de la hoja de cálculo de Google Sheets
+    var spreadsheetId = '1EoHsgJlxrcMDTxgU8yHua4TTsvc7jnIa1Ver2ShIc3I';
+    
+    function extractDriveImageUrl(cellValue) {
+      var regex = /https:\/\/drive\.google\.com\/open\?id=([\w-]+)/;
+      var matches = cellValue.match(regex);
+      if (matches && matches.length > 1) {
+        var imageId = matches[1];
+        return `http://drive.google.com/uc?export=view&id=${imageId}`;
+      }
+      return '';
+    }
+
+    // Rango de celdas que deseas obtener
+    var range = 'Respuestas de formulario 1';
+    var url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+    console.log(url)
+    axios.get(url)
+      .then(function (response) {
+        var data = response.data.values;
+        var tableBody = document.getElementById('table-body');
+        var isValuesLogged = false;
+        var countMap = {};
+
+        data.forEach(function (row, index) {
+          // Obtener el valor en row[12]
+          var estado = row[12];
+          var rowClass = "";
+
+          // Asignar la clase CSS según el estado
+          if (estado === 'Aprobado') {
+            rowClass = "aprobado";
+          } else if (estado === 'Rechazado') {
+            rowClass = "rechazado";
+          }
+
+          var signatureUrl = extractDriveImageUrl(row[11]);
+          var rowHtml = `
+            <tr  class="${rowClass}">
+              <td class="text-center small ">${index}</td>
+              <td class="text-center small ">${row[0]}</td>
+              <td class="text-center small ">${row[1]}</td>
+              <td class="text-center small ">${row[2]}</td>
+              <td class="text-center small ">${row[3]}</td>
+              <td class="text-center small ">${row[4]}</td>
+              <td class="text-center small ">${row[5]}</td>
+              <td class="text-center small ">${row[6]}</td>
+              <td class="text-center small ">${row[7]}</td>
+              <td class="text-center small ">${row[8]}</td>
+              <td class="text-center small ">${row[9]}</td>
+              <td class="text-center small ">${row[10]}</td>
+              <td class="text-center small "><img style="width: 185px; height: 100%; display: block; margin: 10px auto;" src="${signatureUrl}" alt="Firma"></td>
+              <td class="text-center small ">${row[12]}</td>
+            </tr>
+          `;
+
+
+          tableBody.innerHTML += rowHtml;
+          //contar aprobado o rechazado
+          var text = row[12];
+          if (text in countMap) {
+            countMap[text]++;
+          } else {
+            countMap[text] = 1;
+          }
+
+          console.log(text);
+
+          //contar las solicitudes
+          var solici = row[8];
+          if (solici in countMap) {
+            countMap[solici]++;
+          } else {
+            countMap[solici] = 1;
+          }
+
+        });
+
+        // Actualizar la tabla de totales
+        var totalRechazados = document.getElementById('total-rechazados');
+        var totalAprobados = document.getElementById('total-aprobados');
+
+
+        var solicitantes = {
+          michaell: 'Michaell Ibarra Martinez', jhon: 'Jhon Melchor Yataco',
+          fatima: 'Fatima Matos Guando',
+          luis: 'Luis Manzo Candela'
+        };
+
+        for (var key in solicitantes) {
+          var element = document.getElementById(key);
+          element.innerText = countMap[solicitantes[key]] || 0;
+        }
+
+        totalRechazados.innerText = countMap['Rechazado'] || 0;
+        totalAprobados.innerText = countMap['Aprobado'] || 0;
+
+        if (!isValuesLogged) {
+          // console.log(data);
+          // console.log(countMap);
+          isValuesLogged = true;
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    // Ocultar todas las filas de la tabla inicialmente
+    document.querySelectorAll('#table-body tr').forEach(function (row) {
+      row.style.display = 'none';
+    });
+
+    // Función para realizar la búsqueda en la tabla por solicitante
+    document.getElementById('search-button').addEventListener('click', function () {
+      var input = document.getElementById('search-input').value;
+      var rows = document.querySelectorAll('#table-body tr');
+
+      rows.forEach(function (row) {
+        var dnibuscar = row.cells[11];
+
+        if (
+          dnibuscar.textContent.toLowerCase().includes(input.toLowerCase())
+        ) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+  </script>
+</body>
+
+</html>
